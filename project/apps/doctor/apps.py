@@ -1,0 +1,6 @@
+from django.apps import AppConfig
+
+
+class DoctorConfig(AppConfig):
+    name = "apps.doctor"
+    verbose_name = "Доктора"
