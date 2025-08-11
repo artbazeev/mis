@@ -4,10 +4,12 @@ from django_filters.constants import EMPTY_VALUES
 
 class ListFilter(Filter):
     """
-    ListFilter позволяет производить фильтрацию по спискам значений, разделённых запятыми.
+    ListFilter позволяет производить фильтрацию по спискам
+    значений, разделённых запятыми.
 
     Примерное использование:
-        <поле> = ListFilter(field_name='<название в модели>', queryset=<модель>.objects.all(), lookup_expr='in')
+        <поле> = ListFilter(field_name='<название в модели>',
+        queryset=<модель>.objects.all(), lookup_expr='in')
 
     """
 

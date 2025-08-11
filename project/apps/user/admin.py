@@ -25,7 +25,11 @@ class UserAdmin(BaseUserAdmin):
                 "classes": ("wide",),
                 "fields": (
                     "first_name",
+                    "last_name",
+                    "patronymic",
+                    "phone",
                     "email",
+                    "role",
                     "password1",
                     "password2",
                 ),

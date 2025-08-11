@@ -9,14 +9,12 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):  # noqa: WPS110
         try:  # noqa: WPS229
             user = User.objects.create(
-                email="test@test.ru",
-                first_name="admin",
-                last_name="admin",
+                username="test",
             )
             user.is_staff = True
             user.is_superuser = True
             user.set_password("1234")
             user.save()
-            print("Создан админ +79000000/123")  # noqa: T001 WPS421
+            print("Создан админ test/123")  # noqa: T001 WPS421
         except Exception as e:
             raise CommandError(e)
