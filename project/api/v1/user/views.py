@@ -1,18 +1,3 @@
-from api.v1.user.serializers import (
-    UserCompactSerializer,
-    UserReadSerializer,
-    UserRegistrationSerializer,
-    UserWriteSerializer,
-)
-from apps.helpers import exceptions, viewsets
-from apps.helpers.permissions import (
-    IsAdministratorOrSuperUser,
-    IsPerformerTaskUser,
-    IsSuperUser,
-)
-from apps.helpers.serializers import EnumSerializer
-from apps.user.managers import UserManager
-from apps.user.models.user import RoleChoices
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from drf_yasg.utils import no_body, swagger_auto_schema
@@ -23,6 +8,18 @@ from rest_framework.response import Response
 from rest_framework_simplejwt import authentication as authentication_jwt
 from rest_framework_simplejwt import serializers as jwt_serializers
 from rest_framework_simplejwt import views
+
+from api.v1.user.serializers import (
+    UserCompactSerializer,
+    UserReadSerializer,
+    UserRegistrationSerializer,
+    UserWriteSerializer,
+)
+from apps.helpers import exceptions, viewsets
+from apps.helpers.permissions import IsAdmin
+from apps.helpers.serializers import EnumSerializer
+from apps.user.managers import UserManager
+from apps.user.models.user import RoleChoices
 
 
 class AuthViewSet(
@@ -121,15 +118,10 @@ class UserViewSet(AuthViewSet):  # noqa: WPS214
     permission_classes = (permissions.IsAuthenticated,)
     permission_map = {
         **AuthViewSet.permission_map,
-        "create": (IsSuperUser,),
-        "list": (IsAdministratorOrSuperUser,),
-        "retrieve": (IsAdministratorOrSuperUser,),
-        "destroy": (IsAdministratorOrSuperUser,),
-        "password_reset": (
-            IsAdministratorOrSuperUser,
-            IsSuperUser,
-            IsPerformerTaskUser,
-        ),
+        "create": (IsAdmin,),
+        "list": (IsAdmin,),
+        "retrieve": (IsAdmin,),
+        "destroy": (IsAdmin,),
     }
 
     search_fields = ("first_name",)
@@ -143,10 +135,12 @@ class UserViewSet(AuthViewSet):  # noqa: WPS214
     def get_queryset(self):  # noqa: WPS615
         user = self.request.user
         queryset = UserManager().get_queryset(user)
-        if not user.is_authenticated:
-            return queryset.none()
-
-        return queryset
+        user = self.request.user
+        if user.role in (RoleChoices.SUPERUSER, RoleChoices.DOCTOR):
+            return queryset
+        if user.role == RoleChoices.PATIENT:
+            return queryset.filter(id=user.id)
+        return self.queryset.none()
 
     @decorators.action(methods=["get"], detail=False)
     def me(self, request, **kwargs):

@@ -1,11 +1,12 @@
-from apps.helpers.registration_validators import username_validator
-from apps.helpers.serializers import EnumField
-from apps.user.models import User
-from apps.user.models.user import RoleChoices
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
+
+from apps.helpers.registration_validators import username_validator
+from apps.helpers.serializers import EnumField
+from apps.user.models import User
+from apps.user.models.user import RoleChoices
 
 
 class UserCompactSerializer(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class UserReadSerializer(serializers.ModelSerializer):
             "id",
             "first_name",
             "email",
+            "phone",
             "role",
         )
 
@@ -108,6 +110,9 @@ class LoginSerializer(serializers.Serializer):
 
 class UserRegistrationSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    patronymic = serializers.CharField(required=False)
+    phone = serializers.CharField(required=True)
     email = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)
@@ -116,7 +121,15 @@ class UserRegistrationSerializer(serializers.Serializer):
 
     class Meta:
         model = User
-        fields = ("id", "first_name", "email", "password", "password2")
+        fields = (
+            "id",
+            "first_name",
+            "email",
+            "patronymic",
+            "phone",
+            "password",
+            "password2",
+        )
 
     def validate(self, attrs):
         if User.objects.filter(email=attrs["email"]).first():

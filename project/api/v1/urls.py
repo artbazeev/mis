@@ -4,15 +4,18 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions, routers
 
 from .celery.views import CeleryResultView
-from .file.views import FileViewSet
+from .clinic.views import ClinicViewSet
+from .consultation.views import ConsultationViewSet
 from .doctor.views import DoctorViewSet
+from .patient.views import PatientViewSet
 from .user.views import UserViewSet
 
 router = routers.DefaultRouter()
-router.register("file", FileViewSet, basename="file")
 router.register("user", UserViewSet, basename="user")
+router.register("clinic", ClinicViewSet, basename="clinic")
 router.register("doctor", DoctorViewSet, basename="doctor")
-
+router.register("patient", PatientViewSet, basename="patient")
+router.register("consultation", ConsultationViewSet, basename="consultation")
 schema_view = get_schema_view(
     openapi.Info(
         title="MIS API",
@@ -24,6 +27,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path("", include(router.urls)),
     path(
         "swagger(<str:format>.json|.yaml)/",
         schema_view.without_ui(),

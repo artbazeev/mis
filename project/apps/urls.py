@@ -3,13 +3,13 @@ from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 
-admin.site.site_title = "TRACKER OF TASKS"
-admin.site.site_header = "TRACKER OF TASKS"
+admin.site.site_title = "МИС"
+admin.site.site_header = "Медицинская информационная система"
 admin.site.index_title = "Панель администрирования"
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include(("api.v1.urls", "api_v1"))),
+    path("api/v1/", include("api.v1.urls")),
 ]
 
 
